@@ -1,0 +1,63 @@
+plugins {
+    id "net.serenity-bdd.serenity-gradle-plugin" version "4.2.11"
+    id 'java'
+    id 'eclipse'
+    id 'idea'
+}
+
+defaultTasks 'clean', 'test', 'aggregate'
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+sourceCompatibility = 17
+targetCompatibility = 17
+
+ext {
+    serenityCoreVersion = '4.2.11'
+    junit5Version = '5.11.4'
+    assertJVersion = '3.22.0'
+    logbackVersion = '1.2.11'
+}
+
+dependencies {
+    testImplementation "net.serenity-bdd:serenity-core:${serenityCoreVersion}"
+    testImplementation "net.serenity-bdd:serenity-junit5:${serenityCoreVersion}"
+    testImplementation "net.serenity-bdd:serenity-junit:${serenityCoreVersion}"
+    testImplementation "net.serenity-bdd:serenity-screenplay:${serenityCoreVersion}"
+    testImplementation "net.serenity-bdd:serenity-ensure:${serenityCoreVersion}"
+    testImplementation "net.serenity-bdd:serenity-screenplay-webdriver:${serenityCoreVersion}"
+
+    testImplementation "org.junit.jupiter:junit-jupiter-api:${junit5Version}"
+    testImplementation "org.junit.jupiter:junit-jupiter-engine:${junit5Version}"
+
+    testImplementation "org.assertj:assertj-core:${assertJVersion}"
+    implementation "ch.qos.logback:logback-classic:${logbackVersion}"
+}
+
+test {
+    useJUnitPlatform()
+    systemProperties System.getProperties()
+    systemProperty 'junit.jupiter.extensions.autodetection.enabled', 'true'
+
+    filter {
+        includeTestsMatching "*Test"
+        includeTestsMatching "Test*"
+        includeTestsMatching "*TestSuite"
+        includeTestsMatching "When*"
+    }
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+    options.compilerArgs += '-parameters'
+}
+
+serenity {
+    reports = ["single-page-html"]
+}
+
+test.finalizedBy(aggregate)
+gradle.startParameter.continueOnFailure = true
