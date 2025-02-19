@@ -8,6 +8,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import net.serenitybdd.core.Serenity;
 import org.openqa.selenium.WebDriver;
 
+import java.util.List;
+
 @ExtendWith(SerenityJUnit5Extension.class)
 public class WhenOnFakeLandingWebPage {
 
@@ -18,6 +20,8 @@ public class WhenOnFakeLandingWebPage {
 
     FakeLandingPage fakeLandingPage;
 
+    CoursesListPageObject coursesListPageObject;
+
     @Test
     public void titleIsDisplayingAsExpected(){
 
@@ -27,6 +31,19 @@ public class WhenOnFakeLandingWebPage {
         Serenity.reportThat("The title is displaying with the correct value",
                 () -> assertThat(fakeLandingPage.getTitleText())
                         .isEqualToIgnoringCase("Learn to Code Websites, Apps & Games"));
+    }
+
+
+    @Test
+    public  void shouldDisplayHighlightedProductsOnTheLandingPage(){
+
+        webDriver.get("https://ultimateqa.com/fake-landing-page#");
+
+        List<String> coursesOnDisplay = coursesListPageObject.titles();
+
+        assertThat(coursesOnDisplay).hasSize(8)
+                .contains("Web Development");
+
     }
 
 }
